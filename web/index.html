@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Smack Web Frontend</title>
+  <script>
+    async function fetchVersion() {
+      try {
+        const response = await fetch("/api");
+        const text = await response.text();
+        document.getElementById("version").textContent = text;
+      } catch (err) {
+        document.getElementById("version").textContent = "Error fetching API.";
+        console.error(err);
+      }
+    }
+
+    window.onload = fetchVersion;
+  </script>
+</head>
+<body>
+  <h1>Smack Web Frontend</h1>
+  <p>API Response:</p>
+  <pre id="version">Loading...</pre>
+</body>
+</html>

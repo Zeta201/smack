@@ -1,0 +1,32 @@
+# file: .brigade/project.yaml
+
+apiVersion: brigade.sh/v2
+kind: Project
+metadata:
+  id: smack         # this is the name of your brigade project; must be lowercase, no spaces or special chars except dashes
+  description: "Smack API + Web CI/CD with Docker Hub"
+spec:
+  repository:
+    name: yourgithubuser/smack   # replace with your GitHub username and the repository name
+    type: github
+  # These are secrets/values that need to be kept safe (webhook secret, Docker credentials)
+  secrets:
+    # This section is for sensitive values (not stored in plain in project.yaml if you don't want them public)
+    WEBHOOK_SECRET: "someRandomStringHere"   # you choose this string
+    DOCKERHUB_USER: "yourdockeruser"
+    DOCKERHUB_PASS: "yourdockerpassword_or_token"
+  workerTemplate:
+    # By default, this can inherit settings; might set image pull secrets if needed
+    # optional: if your Brigade job script needs to pull images from private registry, you might reference imagePullSecrets here.
+    # Not strictly needed here if you're using public or imagePullSecrets at job level.
+    # But to be safe:
+    imagePullSecrets:
+      - name: dockerhub-secret
+  eventSubscriptions:
+    # Which kinds of events trigger builds
+    - source: brigade.sh/github
+      types:
+        - push
+        - pull_request
+      qualifiers:
+        repo: yourgithubuser/smack  # make sure it's exactly your repo
