@@ -13,8 +13,8 @@ spec:
   secrets:
     # This section is for sensitive values (not stored in plain in project.yaml if you don't want them public)
     WEBHOOK_SECRET: "someRandomStringHere"   # you choose this string
-    DOCKERHUB_USER: "yourdockeruser"
-    DOCKERHUB_PASS: "yourdockerpassword_or_token"
+    DOCKERHUB_USER: "992220449"
+    DOCKERHUB_PASS: "cprogram2040"
   workerTemplate:
     # By default, this can inherit settings; might set image pull secrets if needed
     # optional: if your Brigade job script needs to pull images from private registry, you might reference imagePullSecrets here.
