@@ -12,7 +12,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
     if version == "" {
         version = "v1"
     }
-    fmt.Fprintf(w, "Hello from Smack API! Version: %s\n", version)
+    fmt.Fprintf(w, "Hello from Smack API! This is me Version: %s\n", version)
 }
 
 func main() {
