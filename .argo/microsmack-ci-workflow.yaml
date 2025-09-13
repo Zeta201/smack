@@ -1,0 +1,63 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: microsmack-ci-template
+  namespace: microsmack
+spec:
+  entrypoint: build-and-deploy
+  templates:
+    - name: build-and-deploy
+      dag:
+        tasks:
+          - name: build-api
+            template: docker-build-api
+          - name: build-web
+            template: docker-build-web
+          - name: deploy-api
+            template: kubectl-apply-api
+            dependencies: [build-api]
+          - name: deploy-web
+            template: kubectl-apply-web
+            dependencies: [build-web]
+
+    - name: docker-build-api
+      container:
+        image: docker:20.10
+        command: [sh, -c]
+        args:
+          - |
+            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+            docker build -t $DOCKER_USER/smackapi:latest ./smackapi
+            docker push $DOCKER_USER/smackapi:latest
+        envFrom:
+          - secretRef:
+              name: docker-credentials
+
+    - name: docker-build-web
+      container:
+        image: docker:20.10
+        command: [sh, -c]
+        args:
+          - |
+            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+            docker build -t $DOCKER_USER/smackweb:latest ./smackweb
+            docker push $DOCKER_USER/smackweb:latest
+        envFrom:
+          - secretRef:
+              name: docker-credentials
+
+    - name: kubectl-apply-api
+      container:
+        image: bitnami/kubectl:latest
+        command: [sh, -c]
+        args:
+          - kubectl apply -f smackapi-deployment.yaml -n microsmack
+          - kubectl apply -f smackapi-service.yaml -n microsmack
+
+    - name: kubectl-apply-web
+      container:
+        image: bitnami/kubectl:latest
+        command: [sh, -c]
+        args:
+          - kubectl apply -f web-deployment.yaml -n microsmack
+          - kubectl apply -f web-service.yaml -n microsmack
