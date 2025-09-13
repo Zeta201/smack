@@ -58,8 +58,12 @@ spec:
         image: bitnami/kubectl:latest
         command: [sh, -c]
         args:
-          - kubectl apply -f smackapi-deployment.yaml -n microsmack
-            && kubectl apply -f smackapi-service.yaml -n microsmack
+          - |
+            kubectl apply -f /workspace/kubernetes/smackapi-deployment.yaml -n microsmack && \
+            kubectl apply -f /workspace/kubernetes/smackapi-service.yaml -n microsmack
+      volumeMounts:
+        - name: repo
+          mountPath: /workspace
 
     # Deploy Web
     - name: kubectl-apply-web
@@ -67,8 +71,12 @@ spec:
         image: bitnami/kubectl:latest
         command: [sh, -c]
         args:
-          - kubectl apply -f web-deployment.yaml -n microsmack
-            && kubectl apply -f web-service.yaml -n microsmack
+          - |
+            kubectl apply -f /workspace/kubernetes/web-deployment.yaml -n microsmack && \
+            kubectl apply -f /workspace/kubernetes/web-service.yaml -n microsmack
+      volumeMounts:
+        - name: repo
+          mountPath: /workspace
 
   volumes:
     - name: repo
