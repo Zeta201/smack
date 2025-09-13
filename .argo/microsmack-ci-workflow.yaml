@@ -29,8 +29,8 @@ spec:
           - |
             echo "Files in /workspace:" && ls -R /workspace && \
             /kaniko/executor \
-              --dockerfile=/workspace/smackapi/Dockerfile \
-              --context=/workspace \
+              --dockerfile=Dockerfile \
+              --context=/workspace/smackapi \
               --destination=docker.io/992220449/smackapi:latest \
               --cache=true
         envFrom:
@@ -51,6 +51,7 @@ spec:
           volumeMounts:
             - name: repo
               mountPath: /workspace
+
 
     # Kaniko build Web
     - name: kaniko-build-web
