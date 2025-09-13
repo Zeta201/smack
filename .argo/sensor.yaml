@@ -4,6 +4,7 @@ metadata:
   name: github-ci-sensor
   namespace: argo-events
 spec:
+  serviceAccountName: argo-events-sa
   dependencies:
     - name: github-dep
       eventSourceName: github-events

@@ -10,9 +10,9 @@ spec:
       dag:
         tasks:
           - name: build-api
-            template: docker-build-api
+            template: kaniko-build-api
           - name: build-web
-            template: docker-build-web
+            template: kaniko-build-web
           - name: deploy-api
             template: kubectl-apply-api
             dependencies: [build-api]
@@ -20,44 +20,59 @@ spec:
             template: kubectl-apply-web
             dependencies: [build-web]
 
-    - name: docker-build-api
+    # Kaniko build API
+    - name: kaniko-build-api
       container:
-        image: docker:20.10
-        command: [sh, -c]
+        image: gcr.io/kaniko-project/executor:latest
         args:
-          - |
-            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-            docker build -t $DOCKER_USER/smackapi:latest ./smackapi
-            docker push $DOCKER_USER/smackapi:latest
+          - --dockerfile=smackapi/Dockerfile
+          - --context=/workspace
+          - --destination=$DOCKER_USER/smackapi:latest
+          - --cache=true
         envFrom:
           - secretRef:
               name: docker-credentials
+      volumeMounts:
+        - name: repo
+          mountPath: /workspace
 
-    - name: docker-build-web
+    # Kaniko build Web
+    - name: kaniko-build-web
       container:
-        image: docker:20.10
-        command: [sh, -c]
+        image: gcr.io/kaniko-project/executor:latest
         args:
-          - |
-            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-            docker build -t $DOCKER_USER/smackweb:latest ./smackweb
-            docker push $DOCKER_USER/smackweb:latest
+          - --dockerfile=web/Dockerfile
+          - --context=/workspace
+          - --destination=$DOCKER_USER/smackweb:latest
+          - --cache=true
         envFrom:
           - secretRef:
               name: docker-credentials
+      volumeMounts:
+        - name: repo
+          mountPath: /workspace
 
+    # Deploy API
     - name: kubectl-apply-api
       container:
         image: bitnami/kubectl:latest
         command: [sh, -c]
         args:
           - kubectl apply -f smackapi-deployment.yaml -n microsmack
-          - kubectl apply -f smackapi-service.yaml -n microsmack
+            && kubectl apply -f smackapi-service.yaml -n microsmack
 
+    # Deploy Web
     - name: kubectl-apply-web
       container:
         image: bitnami/kubectl:latest
         command: [sh, -c]
         args:
           - kubectl apply -f web-deployment.yaml -n microsmack
-          - kubectl apply -f web-service.yaml -n microsmack
+            && kubectl apply -f web-service.yaml -n microsmack
+
+  volumes:
+    - name: repo
+      gitRepo:
+        repository: https://github.com/Zeta201/smack.git
+        revision: main
+        directory: .

@@ -4,16 +4,17 @@ metadata:
   name: github-events
   namespace: argo-events
 spec:
+  service:
+    ports:
+      - port: 12000
+        targetPort: 12000
   github:
     example:
       owner: Zeta201
       repository: smack
       webhook:
         endpoint: /push
-        port: 12000
-        secret:
-          name: github-webhook-secret
-          key: secret
+        port: "12000"
       events:
         - push
         - pull_request
