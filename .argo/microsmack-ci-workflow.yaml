@@ -126,8 +126,8 @@ spec:
             set -ex
             kubectl apply -f /workspace/kubernetes/web-deployment.yaml -n microsmack
             kubectl apply -f /workspace/kubernetes/web-service.yaml -n microsmack
-            kubectl patch deployment smackweb -n microsmack \
-              -p "$(echo '{"spec":{"template":{"metadata":{"annotations":{"date":"'$(date +%s)'"}}}}}')"
+            kubectl rollout restart deployment smackweb -n microsmack
+
         volumeMounts:
           - name: repo
             mountPath: /workspace
