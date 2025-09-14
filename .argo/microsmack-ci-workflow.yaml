@@ -118,7 +118,8 @@ spec:
           - |
             kubectl apply -f /workspace/kubernetes/web-deployment.yaml -n microsmack && \
             kubectl apply -f /workspace/kubernetes/web-service.yaml -n microsmack && \
-            kubectl rollout restart deployment/smackweb -n microsmack
+            kubectl patch deployment smackweb -n microsmack \
+              -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"date\":\"$(date +%s)\"}}}}}"
         volumeMounts:
           - name: repo
             mountPath: /workspace
