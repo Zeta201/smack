@@ -57,10 +57,13 @@ spec:
       container:
         image: gcr.io/kaniko-project/executor:latest
         args:
-          - --dockerfile=Dockerfile
-          - --context=/workspace/web
-          - --destination=docker.io/992220449/smackweb:latest
-          - --cache=false
+          - |
+            echo "Files in /workspace:" && ls -R /workspace && \
+            /kaniko/executor \
+              --dockerfile=Dockerfile
+              --context=/workspace/web
+              --destination=docker.io/992220449/smackweb:latest
+              --cache=false
         envFrom:
           - secretRef:
               name: docker-credentials
