@@ -12,7 +12,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
     if version == "" {
         version = "v1"
     }
-    fmt.Fprintf(w, "Hello this is changed Version: %s\n", version)
+    fmt.Fprintf(w, "Hello this github trigger: %s\n", version)
 }
 
 func main() {
