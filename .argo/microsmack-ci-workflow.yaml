@@ -32,7 +32,7 @@ spec:
               --dockerfile=Dockerfile \
               --context=/workspace/smackapi \
               --destination=docker.io/992220449/smackapi:latest \
-              --cache=true
+              --cache=false
         envFrom:
           - secretRef:
               name: docker-credentials
@@ -51,17 +51,16 @@ spec:
           volumeMounts:
             - name: repo
               mountPath: /workspace
-
 
     # Kaniko build Web
     - name: kaniko-build-web
       container:
         image: gcr.io/kaniko-project/executor:latest
         args:
-          - --dockerfile=Dockerfile          # Notice: relative to context now
-          - --context=/workspace/web          # Changed context to /workspace/web
+          - --dockerfile=Dockerfile
+          - --context=/workspace/web
           - --destination=docker.io/992220449/smackweb:latest
-          - --cache=true
+          - --cache=false
         envFrom:
           - secretRef:
               name: docker-credentials
@@ -80,8 +79,6 @@ spec:
           volumeMounts:
             - name: repo
               mountPath: /workspace
-
-        
 
     # Deploy API
     - name: kubectl-apply-api
@@ -91,14 +88,15 @@ spec:
         args:
           - |
             kubectl apply -f /workspace/kubernetes/smackapi-deployment.yaml -n microsmack && \
-            kubectl apply -f /workspace/kubernetes/smackapi-service.yaml -n microsmack
+            kubectl apply -f /workspace/kubernetes/smackapi-service.yaml -n microsmack && \
+            kubectl rollout restart deployment/smackapi-api -n microsmack
         volumeMounts:
           - name: repo
             mountPath: /workspace
       initContainers:
         - name: git-clone
           image: alpine/git
-          command: ["sh", "-c"]
+          command: ["sh", -c]
           args:
             - git clone --depth=1 --branch main https://github.com/Zeta201/smack.git /workspace
           volumeMounts:
@@ -113,14 +111,15 @@ spec:
         args:
           - |
             kubectl apply -f /workspace/kubernetes/web-deployment.yaml -n microsmack && \
-            kubectl apply -f /workspace/kubernetes/web-service.yaml -n microsmack
+            kubectl apply -f /workspace/kubernetes/web-service.yaml -n microsmack && \
+            kubectl rollout restart deployment/smackweb -n microsmack
         volumeMounts:
           - name: repo
             mountPath: /workspace
       initContainers:
         - name: git-clone
           image: alpine/git
-          command: ["sh", "-c"]
+          command: ["sh", -c]
           args:
             - git clone --depth=1 --branch main https://github.com/Zeta201/smack.git /workspace
           volumeMounts:

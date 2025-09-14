@@ -18,6 +18,7 @@ spec:
       containers:
         - name: web
           image: docker.io/992220449/smackweb:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
       imagePullSecrets:

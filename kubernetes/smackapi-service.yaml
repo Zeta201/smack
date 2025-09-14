@@ -4,8 +4,10 @@ metadata:
   name: smackapi-api
   namespace: microsmack
 spec:
+  type: NodePort
   selector:
     app: api
   ports:
     - port: 80
       targetPort: 8080
+      nodePort: 30081  # Exposed port for external access
