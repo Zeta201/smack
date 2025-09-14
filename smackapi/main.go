@@ -4,15 +4,11 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"os"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
-    version := os.Getenv("VERSION")
-    if version == "" {
-        version = "v1"
-    }
-    fmt.Fprintf(w, "Hello this github trigger: %s\n", version)
+
+    fmt.Fprintf(w, "Hello from server: This is prod\n")
 }
 
 func main() {

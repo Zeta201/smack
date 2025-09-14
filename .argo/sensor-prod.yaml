@@ -1,17 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Sensor
 metadata:
-  name: github-ci-sensor
+  name: github-ci-prod-sensor
   namespace: argo-events
 spec:
   serviceAccountName: argo-events-sa
   dependencies:
-    - name: github-dep
-      eventSourceName: github-events
-      eventName: example
+    - name: github-main-branch
+      eventSourceName: github-events   # should match your GitHub EventSource
+      eventName: main-branch           # main branch event
   triggers:
     - template:
-        name: argo-workflow-trigger
+        name: prod-workflow-trigger
         argoWorkflow:
           group: argoproj.io
           version: v1alpha1
@@ -22,8 +22,8 @@ spec:
               apiVersion: argoproj.io/v1alpha1
               kind: Workflow
               metadata:
-                generateName: microsmack-ci-
+                generateName: microsmack-ci-prod-
                 namespace: microsmack
               spec:
                 workflowTemplateRef:
-                  name: microsmack-ci-template
+                  name: microsmack-ci-prod
