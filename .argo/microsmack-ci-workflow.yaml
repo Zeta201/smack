@@ -4,6 +4,7 @@ metadata:
   name: microsmack-ci-template
   namespace: microsmack
 spec:
+  serviceAccountName: argo
   entrypoint: build-and-deploy
   templates:
     - name: build-and-deploy
@@ -88,6 +89,9 @@ spec:
 
     # Deploy API
     - name: kubectl-apply-api
+      metadata:
+          annotations:
+            sidecar.istio.io/inject: "false" 
       container:
         image: bitnami/kubectl:latest
         command: [sh, -c]
@@ -111,6 +115,9 @@ spec:
 
     # Deploy Web
     - name: kubectl-apply-web
+      metadata:
+        annotations:
+          sidecar.istio.io/inject: "false" 
       container:
         image: bitnami/kubectl:latest
         command: [sh, -c]
